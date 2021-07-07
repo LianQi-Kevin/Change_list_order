@@ -108,7 +108,6 @@ for i in range(len(row_list)):
 # exit()
 
 # 提取数据并写入
-num = 0
 name_list = []
 for i in range(len(row_list)):
     # print(i)
@@ -149,4 +148,3 @@ for i in range(len(row_list)):
         paragraph_em.add_run(" ")
 
     output_docx.save("output.docx")
-    num += 1
