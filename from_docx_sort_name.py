@@ -33,8 +33,7 @@ def sort_name_list(name_lists):
     # print(new_name_list)
     return new_name_list
 
-
-def write_student_name_per12(sorted_list, output_docx):
+def split_name_list_per_12(sorted_list):
     # 按照12个为一组分开创建列表
     index = 0
     new_list = []
@@ -50,30 +49,31 @@ def write_student_name_per12(sorted_list, output_docx):
             new_write_list.append(new_list)
             new_list = []
             index = 0
-    print(new_write_list)
+    return new_write_list
 
+def write_student_name_per12(sorted_list, output_docx):
     # 顺序写入段落并调整字号
-    for para in new_write_list:
+    for para in sorted_list:
         paragraph = output_docx.add_paragraph()  # 每循环一次创建一个段落
         paragraph.paragraph_format.space_before = Pt(0)  # 段前间距
         paragraph.paragraph_format.space_after = Pt(0)  # 段后间距
         for name in para:
             if len(name) == 4:
-                print(name)
+                # print(name)
                 run = paragraph.add_run(name)
                 run.font.size = Pt(8)  # 字体大小设置，和word里面的字号相对应
-                run1 = paragraph.add_run("  ")
             elif len(name) == 2:
                 run = paragraph.add_run(name[0])
                 run.font.size = Pt(10.5)  # 字体大小设置，和word里面的字号相对应
                 run1 = paragraph.add_run("  ")
+                run1.font.size = Pt(10.5)
                 run2 = paragraph.add_run(name[1])
                 run2.font.size = Pt(10.5)  # 字体大小设置，和word里面的字号相对应
-                run3 = paragraph.add_run("  ")
             else:
                 run = paragraph.add_run(name)
                 run.font.size = Pt(10.5)  # 字体大小设置，和word里面的字号相对应
-                run1 = paragraph.add_run("  ")
+            run1 = paragraph.add_run("  ")
+    return new_name_list
 
 
 # 定义输入输出文件
@@ -138,13 +138,14 @@ for i in range(len(row_list)):
     elif Adict[str(i)] == "name_line":
         name_list.append(row_list[i])
     elif Adict[str(i)] == "split_line":
-        new_name_list = sort_name_list(name_list)
-        new_name_list = sort_by_stroke(new_name_list)
+        new_name_list = split_name_list_per_12(sort_by_stroke(sort_name_list(name_list)))
         write_student_name_per12(new_name_list, output_docx)
+        if new_name_list[-1] != []:
+            paragraph_em = output_docx.add_paragraph()
+            paragraph.paragraph_format.space_before = Pt(0)  # 段前间距
+            paragraph.paragraph_format.space_after = Pt(0)  # 段后间距
+            paragraph_em.add_run("")
+        print(new_name_list)
         name_list = []
-        paragraph_em = output_docx.add_paragraph()
-        paragraph.paragraph_format.space_before = Pt(0)  # 段前间距
-        paragraph.paragraph_format.space_after = Pt(0)  # 段后间距
-        paragraph_em.add_run(" ")
 
     output_docx.save("output.docx")
